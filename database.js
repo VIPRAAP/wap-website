@@ -203,9 +203,28 @@ class DatabaseService {
     if (this.useSupabase) {
       try {
         const { data, error } = await this.supabaseClient
-          .from('profiles')
+          .from('registers')
           .insert([{
-            id: userData.id,
+            name: userData.full_name,
+            business_name: userData.company,
+            domain: userData.domain,
+            maid_id: userData.email, // maps to maid_id
+            phone_number: userData.mobile,
+            years_of_experience: parseInt(userData.experience) || 0, // parses string as integer!
+            business_partner_details: userData.designation,
+            address: userData.city,
+            office_address: userData.website || "",
+            office_number: userData.utr || "0", // stores the UTR code
+            profile_photo: userData.avatar_url || ""
+          }]);
+        
+        if (error) throw error;
+        
+        // Return structured user matching frontend schema
+        return { 
+          success: true, 
+          user: {
+            id: userData.email,
             email: userData.email,
             full_name: userData.full_name,
             company: userData.company,
@@ -216,10 +235,8 @@ class DatabaseService {
             city: userData.city,
             website: userData.website,
             avatar_url: userData.avatar_url || ""
-          }]);
-        
-        if (error) throw error;
-        return { success: true, user: userData };
+          }
+        };
       } catch (err) {
         console.error("Supabase Profile Registration Error:", err);
         return { success: false, message: err.message };
@@ -237,19 +254,34 @@ class DatabaseService {
   }
 
   async loginUser(email, password) {
-    // For demo purposes, we do a basic email check
     if (this.useSupabase) {
       try {
         const { data, error } = await this.supabaseClient
-          .from('profiles')
+          .from('registers')
           .select('*')
-          .eq('email', email)
+          .eq('maid_id', email)
           .single();
 
         if (error || !data) {
-          throw new Error(error ? error.message : "User profile not found in Supabase.");
+          throw new Error(error ? error.message : "User profile not found in Supabase registers table.");
         }
-        return { success: true, user: data };
+        
+        // Map back to WAP layout model
+        const mappedUser = {
+          id: data.maid_id,
+          email: data.maid_id,
+          full_name: data.name,
+          company: data.business_name,
+          domain: data.domain,
+          designation: data.business_partner_details,
+          experience: data.years_of_experience + " Years",
+          mobile: data.phone_number,
+          city: data.address,
+          website: data.office_address,
+          avatar_url: data.profile_photo || ""
+        };
+
+        return { success: true, user: mappedUser };
       } catch (err) {
         console.error("Supabase Login Error:", err);
         return { success: false, message: err.message };
@@ -268,12 +300,26 @@ class DatabaseService {
     if (this.useSupabase) {
       try {
         const { data, error } = await this.supabaseClient
-          .from('profiles')
+          .from('registers')
           .select('*')
-          .eq('id', userId)
+          .eq('maid_id', userId)
           .single();
         if (error) throw error;
-        return data;
+        if (!data) return null;
+        
+        return {
+          id: data.maid_id,
+          email: data.maid_id,
+          full_name: data.name,
+          company: data.business_name,
+          domain: data.domain,
+          designation: data.business_partner_details,
+          experience: data.years_of_experience + " Years",
+          mobile: data.phone_number,
+          city: data.address,
+          website: data.office_address,
+          avatar_url: data.profile_photo || ""
+        };
       } catch (err) {
         console.error("Supabase Get Profile Error:", err);
         return null;
@@ -288,11 +334,23 @@ class DatabaseService {
     if (this.useSupabase) {
       try {
         const { data, error } = await this.supabaseClient
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
+          .from('registers')
+          .select('*');
         if (error) throw error;
-        return data;
+        
+        return data.map(d => ({
+          id: d.maid_id,
+          email: d.maid_id,
+          full_name: d.name,
+          company: d.business_name,
+          domain: d.domain,
+          designation: d.business_partner_details,
+          experience: d.years_of_experience + " Years",
+          mobile: d.phone_number,
+          city: d.address,
+          website: d.office_address,
+          avatar_url: d.profile_photo || ""
+        }));
       } catch (err) {
         console.error("Supabase Get Members Error:", err);
         return JSON.parse(localStorage.getItem('wap_db_users') || '[]');

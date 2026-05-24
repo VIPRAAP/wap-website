@@ -13,33 +13,33 @@ To hook up your real Supabase backend, follow these simple steps to create the n
 ## SQL Script
 
 ```sql
--- 1. PROFILES TABLE
-CREATE TABLE IF NOT EXISTS public.profiles (
-    id TEXT PRIMARY KEY, -- Stores UID (uuid string or custom id)
-    email TEXT NOT NULL,
-    full_name TEXT NOT NULL,
-    company TEXT,
+-- 1. REGISTERS TABLE (Your actual Supabase schema)
+CREATE TABLE IF NOT EXISTS public.registers (
+    maid_id TEXT PRIMARY KEY, -- Primary Key (email address)
+    name TEXT NOT NULL,
+    business_name TEXT NOT NULL,
     domain TEXT,
-    designation TEXT,
-    experience TEXT,
-    mobile TEXT,
-    city TEXT,
-    website TEXT,
-    avatar_url TEXT,
+    phone_number TEXT,
+    years_of_experience INTEGER DEFAULT 0,
+    business_partner_details TEXT,
+    address TEXT,
+    office_address TEXT,
+    office_number TEXT,
+    profile_photo TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Enable Row Level Security (RLS) and grant explicit public access
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public select" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Allow public insert" ON public.profiles FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update" ON public.profiles FOR UPDATE USING (true) WITH CHECK (true);
+ALTER TABLE public.registers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public select" ON public.registers FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON public.registers FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update" ON public.registers FOR UPDATE USING (true) WITH CHECK (true);
 
 
 -- 2. POSTS TABLE
 CREATE TABLE IF NOT EXISTS public.posts (
     id TEXT PRIMARY KEY,
-    user_id TEXT REFERENCES public.profiles(id) ON DELETE CASCADE,
+    user_id TEXT REFERENCES public.registers(maid_id) ON DELETE CASCADE,
     author_name TEXT NOT NULL,
     author_company TEXT,
     type TEXT CHECK (type IN ('update', 'product', 'achievement', 'networking')) DEFAULT 'update',
