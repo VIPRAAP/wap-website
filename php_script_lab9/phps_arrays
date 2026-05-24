@@ -1,1 +1,73 @@
+<?php
+/* ── LAB 9 – Part 1: PHP Array Operations ── */
+
+// ── 1. SORTING ──
+$names = ["Ravi", "Amit", "Zara", "Priya", "John"];
+
+sort($names);                          // ascending
+echo "Sorted (A→Z): ";
+print_r($names);
+
+rsort($names);                         // descending
+echo "Sorted (Z→A): ";
+print_r($names);
+
+$scores = ["Ravi" => 85, "Amit" => 92, "Priya" => 78];
+arsort($scores);                       // sort by value, keep keys
+echo "Scores (high→low): ";
+print_r($scores);
+
+
+// ── 2. SEARCHING ──
+$members = ["Ravi", "Amit", "Zara", "Priya", "John"];
+
+// in_array – check if value exists
+echo in_array("Zara", $members) ? "Zara is a member.\n" : "Not found.\n";
+
+// array_search – returns index
+$index = array_search("Priya", $members);
+echo "Priya found at index: $index\n";
+
+// array_filter – filter by condition
+$numbers = [10, 25, 3, 47, 8, 60];
+$above20 = array_filter($numbers, fn($n) => $n > 20);
+echo "Numbers above 20: ";
+print_r($above20);
+
+
+// ── 3. MERGING ──
+$group1 = ["Ravi", "Amit"];
+$group2 = ["Zara", "Priya"];
+$merged = array_merge($group1, $group2);
+echo "Merged group: ";
+print_r($merged);
+
+// array_unique – remove duplicates after merge
+$a = [1, 2, 3];
+$b = [2, 3, 4, 5];
+$combined = array_unique(array_merge($a, $b));
+echo "Unique merged: ";
+print_r(array_values($combined));
+
+
+// ── 4. OTHER USEFUL OPERATIONS ──
+$nums = [5, 3, 8, 1, 9, 2];
+
+echo "Count : " . count($nums) . "\n";
+echo "Max   : " . max($nums) . "\n";
+echo "Min   : " . min($nums) . "\n";
+echo "Sum   : " . array_sum($nums) . "\n";
+
+$sliced = array_slice($nums, 1, 3);   // start=1, length=3
+echo "Sliced (index 1–3): ";
+print_r($sliced);
+
+array_push($nums, 100);
+echo "After push(100): ";
+print_r($nums);
+
+array_pop($nums);
+echo "After pop: ";
+print_r($nums);
+?>
 
