@@ -1,1 +1,81 @@
+<?php
+/* ── LAB 9 – Part 2: Regex Validation & String Manipulation ── */
+
+
+// ════════════════════════════════
+// HELPER FUNCTIONS
+// ════════════════════════════════
+
+// Validate email using regex
+function validateEmail(string $email): bool {
+    return (bool) preg_match('/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}$/', $email);
+}
+
+// Validate password: min 8 chars, 1 uppercase, 1 digit, 1 special char
+function validatePassword(string $pw): bool {
+    return (bool) preg_match('/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/', $pw);
+}
+
+// Format name: trim + capitalize each word
+function formatName(string $name): string {
+    return ucwords(strtolower(trim($name)));
+}
+
+// Extract domain from email
+function extractDomain(string $email): string {
+    preg_match('/@([\w\.-]+)$/', $email, $matches);
+    return $matches[1] ?? 'invalid email';
+}
+
+// Extract username (part before @)
+function extractUsername(string $email): string {
+    preg_match('/^([\w\.-]+)@/', $email, $matches);
+    return $matches[1] ?? 'invalid email';
+}
+
+
+// ════════════════════════════════
+// TEST DATA – Simulated WAP Login
+// ════════════════════════════════
+
+$testCases = [
+    ["name" => "  ravi sharma ",  "email" => "ravi.sharma@gmail.com",   "password" => "Ravi@1234"],
+    ["name" => "PRIYA MEHTA",     "email" => "priyamehta@yahoo.com",    "password" => "weakpass"],
+    ["name" => "john doe",        "email" => "invalidemail.com",        "password" => "John$9876"],
+    ["name" => "  amit KULKARNI", "email" => "amit@weareprofessionalswap.in", "password" => "Amit!2024"],
+];
+
+
+// ════════════════════════════════
+// PROCESS & DISPLAY RESULTS
+// ════════════════════════════════
+
+echo str_repeat("=", 55) . "\n";
+echo "  WAP – Login Validation & String Manipulation\n";
+echo str_repeat("=", 55) . "\n\n";
+
+foreach ($testCases as $i => $user) {
+    $num      = $i + 1;
+    $name     = formatName($user['name']);
+    $email    = trim($user['email']);
+    $password = $user['password'];
+
+    $emailOk  = validateEmail($email);
+    $passOk   = validatePassword($password);
+    $domain   = $emailOk ? extractDomain($email)   : "N/A";
+    $username = $emailOk ? extractUsername($email)  : "N/A";
+
+    echo "── User $num ──────────────────────────────────\n";
+    echo "  Formatted Name : $name\n";
+    echo "  Email          : $email\n";
+    echo "  Email Valid    : " . ($emailOk ? "✅ Yes" : "❌ No")  . "\n";
+    echo "  Username       : $username\n";
+    echo "  Domain         : $domain\n";
+    echo "  Password Valid : " . ($passOk  ? "✅ Yes" : "❌ No (needs 8+ chars, uppercase, digit, special)") . "\n";
+    echo "  Login Status   : " . ($emailOk && $passOk ? "✅ Allowed" : "❌ Rejected") . "\n\n";
+}
+
+echo str_repeat("=", 55) . "\n";
+echo "Done.\n";
+?>
 
