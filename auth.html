@@ -323,22 +323,21 @@
       // 1. Register User in Supabase/Local Database
       const res = await window.WapDB.registerUser(user);
       
-      // 2. Log RSVP payment transaction
-      const rsvp = {
-        id: 'pay_' + Date.now(),
-        user_id: userId,
-        user_name: user.full_name,
-        event_id: 'plan_' + selectedPlan,
-        amount: selectedPrice,
-        utr_number: utr,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      };
-      await window.WapDB.createRsvp(rsvp);
-
-      hidePageLoader();
-
       if (res.success) {
+        // 2. Log RSVP payment transaction using the returned user ID (email)
+        const rsvp = {
+          id: 'pay_' + Date.now(),
+          user_id: res.user.id,
+          user_name: user.full_name,
+          event_id: 'plan_' + selectedPlan,
+          amount: selectedPrice,
+          utr_number: utr,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        };
+        await window.WapDB.createRsvp(rsvp);
+
+        hidePageLoader();
         // Set user session
         localStorage.setItem('wap_session_user', JSON.stringify(res.user));
         showToast("Payment verified! Account registered successfully.", "success");
@@ -346,6 +345,7 @@
           window.location.href = "dashboard.html";
         }, 1500);
       } else {
+        hidePageLoader();
         showToast(res.message, "error");
       }
     }
