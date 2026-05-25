@@ -60,7 +60,7 @@ class DatabaseService {
       if (!this.supabaseClient) throw new Error("Supabase client not initialized.");
       
       const { data, error } = await this.supabaseClient
-        .from('registers')
+        .from('register')
         .insert([{
           name: userData.full_name,
           business_name: userData.company,
@@ -104,13 +104,13 @@ class DatabaseService {
       if (!this.supabaseClient) throw new Error("Supabase client not initialized.");
       
       const { data, error } = await this.supabaseClient
-        .from('registers')
+        .from('register')
         .select('*')
         .eq('maid_id', email)
         .single();
 
       if (error || !data) {
-        throw new Error(error ? error.message : "User profile not found in Supabase registers table.");
+        throw new Error(error ? error.message : "User profile not found in Supabase register table.");
       }
       
       const mappedUser = {
@@ -139,7 +139,7 @@ class DatabaseService {
       if (!this.supabaseClient) throw new Error("Supabase client not initialized.");
       
       const { data, error } = await this.supabaseClient
-        .from('registers')
+        .from('register')
         .select('*')
         .eq('maid_id', userId)
         .single();
@@ -171,7 +171,7 @@ class DatabaseService {
       if (!this.supabaseClient) throw new Error("Supabase client not initialized.");
       
       const { data, error } = await this.supabaseClient
-        .from('registers')
+        .from('register')
         .select('*');
         
       if (error) throw error;
